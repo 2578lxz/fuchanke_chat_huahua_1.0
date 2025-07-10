@@ -1,0 +1,1115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>妇产科问诊训练助手华华</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f9f7fe 0%, #e6f0ff 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            color: #333;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 900px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 12px 35px rgba(140, 100, 200, 0.15);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 90vh;
+        }
+        
+        header {
+            background: linear-gradient(90deg, #8e44ad 0%, #3498db 100%);
+            color: white;
+            padding: 22px 30px;
+            text-align: center;
+            position: relative;
+        }
+        
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .logo {
+            background: rgba(255, 255, 255, 0.2);
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        h1 {
+            font-size: 2.1rem;
+            font-weight: 600;
+            margin-bottom: 5px;
+            letter-spacing: 0.5px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+        
+        .subtitle {
+            font-size: 1.05rem;
+            opacity: 0.92;
+            font-weight: 300;
+            margin-top: 5px;
+        }
+        
+        .chat-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px 30px;
+            background: #fafbfd;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+        
+        .message {
+            max-width: 85%;
+            padding: 16px 22px;
+            margin-bottom: 22px;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+            line-height: 1.6;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+            font-size: 1.05rem;
+            white-space: pre-wrap;
+        }
+        
+        .user-message {
+            align-self: flex-end;
+            background: linear-gradient(135deg, #3498db 0%, #1a5d9e 100%);
+            color: white;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .bot-message {
+            align-self: flex-start;
+            background: white;
+            border: 1px solid #eaeef5;
+            border-bottom-left-radius: 5px;
+            color: #333;
+        }
+        
+        .bot-avatar {
+            position: absolute;
+            left: -45px;
+            top: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #8e44ad 0%, #3498db 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 18px;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .typing-indicator {
+            align-self: flex-start;
+            background: white;
+            padding: 15px 22px;
+            border-radius: 18px;
+            border-bottom-left-radius: 5px;
+            margin-bottom: 20px;
+            display: none;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+            border: 1px solid #eaeef5;
+        }
+        
+        .typing-dots {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .typing-dots span {
+            width: 9px;
+            height: 9px;
+            background: #8e44ad;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.3s infinite;
+        }
+        
+        .typing-dots span:nth-child(2) {
+            animation-delay: 0.15s;
+            background: #3498db;
+        }
+        
+        .typing-dots span:nth-child(3) {
+            animation-delay: 0.3s;
+            background: #9b59b6;
+        }
+        
+        .input-container {
+            padding: 20px;
+            background: white;
+            border-top: 1px solid #f0f3f8;
+            display: flex;
+            position: relative;
+            gap: 10px;
+        }
+        
+        .refresh-btn {
+            background: linear-gradient(135deg, #9b59b6 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(155, 89, 182, 0.3);
+        }
+        
+        .refresh-btn:hover {
+            transform: rotate(30deg);
+            box-shadow: 0 6px 15px rgba(155, 89, 182, 0.4);
+        }
+        
+        #user-input {
+            flex: 1;
+            padding: 16px 22px;
+            border: 2px solid #e0e7ff;
+            border-radius: 16px;
+            font-size: 1.05rem;
+            outline: none;
+            transition: all 0.3s;
+            background: #f8faff;
+            box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.03);
+        }
+        
+        #user-input:focus {
+            border-color: #8e44ad;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(142, 68, 173, 0.15);
+        }
+        
+        #send-btn {
+            background: linear-gradient(135deg, #8e44ad 0%, #3498db 100%);
+            color: white;
+            border: none;
+            border-radius: 16px;
+            padding: 0 32px;
+            font-size: 1.05rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 14px rgba(52, 152, 219, 0.35);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        #send-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(52, 152, 219, 0.45);
+        }
+        
+        #send-btn:active {
+            transform: translateY(0);
+        }
+        
+        .info-panel {
+            background: #f8f9ff;
+            border-radius: 18px;
+            padding: 22px;
+            margin-top: 20px;
+            border: 1px solid #e0e7ff;
+            font-size: 0.95rem;
+            line-height: 1.65;
+            color: #555;
+            max-width: 900px;
+            width: 100%;
+        }
+        
+        .info-panel h3 {
+            color: #8e44ad;
+            margin-bottom: 14px;
+            font-size: 1.15rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .info-panel ul {
+            padding-left: 25px;
+        }
+        
+        .info-panel li {
+            margin-bottom: 8px;
+        }
+        
+        .dev-info {
+            background: #f8f9ff;
+            border-radius: 18px;
+            padding: 15px;
+            margin-top: 15px;
+            border: 1px solid #e0e7ff;
+            font-size: 0.9rem;
+            color: #666;
+            max-width: 900px;
+            width: 100%;
+            text-align: center;
+        }
+        
+        .dev-info p {
+            margin: 5px 0;
+        }
+        
+        .option-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .option-btn {
+            background: linear-gradient(135deg, #9b59b6 0%, #3498db 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.95rem;
+        }
+        
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .command {
+            background-color: rgba(52, 152, 219, 0.1);
+            color: #1a5d9e;
+            padding: 3px 8px;
+            border-radius: 5px;
+            border: 1px dashed #3498db;
+            font-weight: 500;
+            display: inline-block;
+            margin: 3px 0;
+        }
+        
+        .session-info {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.1);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.9);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .session-id-display {
+            font-family: monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+            padding: 2px 6px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .session-id-display:hover {
+            background: rgba(255, 255, 255, 0.25);
+            text-decoration: underline;
+        }
+        
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #2ecc71;
+            box-shadow: 0 0 5px #2ecc71;
+        }
+        
+        .session-info-text {
+            font-size: 0.75rem;
+        }
+        
+        .api-status {
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            font-size: 0.75rem;
+            color: #666;
+            background: rgba(255, 255, 255, 0.8);
+            padding: 3px 8px;
+            border-radius: 10px;
+        }
+        
+        .init-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        
+        .init-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #e0e0e0;
+            border-top: 5px solid #8e44ad;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
+        }
+        
+        .init-text {
+            font-size: 1.1rem;
+            color: #555;
+        }
+        
+        .session-expire-warning {
+            position: absolute;
+            top: 60px;
+            right: 10px;
+            background: rgba(231, 76, 60, 0.2);
+            padding: 5px 10px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            color: #e74c3c;
+            display: none;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .option-message {
+            background: white;
+            border: 1px solid #eaeef5;
+            border-radius: 18px;
+            padding: 16px 22px;
+            margin-bottom: 22px;
+            align-self: flex-start;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+            line-height: 1.6;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.06);
+            width: 100%;
+        }
+        
+        .input-prompt {
+            background: #e6f7ff;
+            border-left: 4px solid #3498db;
+            padding: 12px 15px;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+        }
+        
+        .disease-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .disease-btn {
+            background: white;
+            border: 1px solid #e0e7ff;
+            border-radius: 8px;
+            padding: 12px 15px;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .disease-btn:hover {
+            background: #f0f7ff;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+        }
+        
+        .disease-btn.selected {
+            background: #e6f0ff;
+            border-color: #3498db;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-7px); }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                height: 95vh;
+            }
+            
+            .message {
+                max-width: 92%;
+                padding: 14px 18px;
+            }
+            
+            .bot-avatar {
+                left: -40px;
+                width: 36px;
+                height: 36px;
+                font-size: 16px;
+            }
+            
+            #send-btn {
+                padding: 0 22px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .input-container {
+                gap: 8px;
+            }
+            
+            .option-container {
+                flex-direction: column;
+            }
+            
+            .session-info {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 10px;
+                justify-content: center;
+                background: rgba(0, 0, 0, 0.15);
+            }
+            
+            .session-expire-warning {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-top: 5px;
+                margin-bottom: 10px;
+                text-align: center;
+            }
+            
+            .disease-options {
+                gap: 8px;
+            }
+            
+            .disease-btn {
+                padding: 10px 12px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="init-overlay" id="init-overlay">
+            <div class="init-spinner"></div>
+            <div class="init-text">正在初始化会话...</div>
+        </div>
+        
+        <header>
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div>
+                    <h1>妇产科问诊训练助手华华</h1>
+                    <div class="subtitle">专业妇产科问诊训练平台</div>
+                </div>
+            </div>
+            <div class="session-info" id="session-info">
+                <div class="status-indicator"></div>
+                <span class="session-info-text">会话ID:</span>
+                <span class="session-id-display" id="session-id-display">初始化中...</span>
+            </div>
+            <div class="session-expire-warning" id="session-expire-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>会话即将过期，30分钟后自动刷新</span>
+            </div>
+        </header>
+        
+        <div class="chat-container" id="chat-container">
+            <div class="message bot-message">
+                <div class="bot-avatar">
+                    <i class="fas fa-stethoscope"></i>
+                </div>
+                你好，我是妇产科问诊小助手华华~，输入<span class="command">开始问诊</span>，让我来帮你进行问诊训练吧。ξ( ✿＞◡❛)
+            </div>
+            <div class="message bot-message">
+                <div class="bot-avatar">
+                    <i class="fas fa-info-circle"></i>
+                </div>
+                <strong>注意事项：</strong><br><br>
+                1. 该模型目前对于问诊结束的条件判断尚有缺陷இдஇ，确认结束问诊后，请手动输入<span class="command">问诊结束</span>，以获取评估报告。<br>
+                2. 如果问诊过程中模型突然脱离了患者角色，可能是出现了BUG，可尝试再次输入问题或者稍稍改写原问题后再输入。<br>
+                3. 在选择病案时，请以<span class="command">病案+数字</span>的形式输入，避免出现BUG。<br>
+                4. 问诊过程中如需调取检查报告，请按照 <span class="command">调取检查结果：***</span> 的格式输入，进行客观检查数据的调取。
+            </div>
+        </div>
+        
+        <div class="typing-indicator" id="typing-indicator">
+            <div class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div style="margin-left: 12px; color: #666; font-size: 0.95rem;">华华正在思考中...</div>
+        </div>
+        
+        <div class="input-container">
+            <button class="refresh-btn" id="refresh-btn">
+                <i class="fas fa-sync-alt"></i>
+            </button>
+            <input type="text" id="user-input" placeholder="请输入指令或您的妇产科问题...">
+            <button id="send-btn">
+                <i class="fas fa-paper-plane"></i> 发送
+            </button>
+        </div>
+        <div class="api-status" id="api-status">API状态: 正常</div>
+    </div>
+    
+    <div class="info-panel">
+        <h3><i class="fas fa-lightbulb"></i> 使用指南</h3>
+        <ul>
+            <li>输入<span class="command">开始问诊</span>选择难度并开始训练</li>
+            <li>按照真实问诊流程进行病史采集和体格检查询问</li>
+            <li>使用专业术语交流以提高训练效果</li>
+            <li>训练结束后输入<span class="command">问诊结束</span>获取评估报告</li>
+            <li>刷新按钮<span><i class="fas fa-sync-alt"></i></span>可重置对话</li>
+        </ul>
+    </div>
+    
+    <div class="dev-info">
+        <p>开发者：Simonmato</p>
+        <p>联系方式：QQ：3424957878</p>
+        <p>祝你能够在该模型的帮助下熟练妇产科问诊技巧ヽ( ° ▽°)ノ</p>
+    </div>
+    <script>
+        // 全局变量
+        let conversationId = null;
+        let userId = 'user_' + Math.floor(Math.random() * 1000000);
+        let currentBotMessage = null;
+        let messageBuffer = '';
+        let sessionStartTime = null;
+        let sessionTimer = null;
+        let isProcessing = false; // 防止重复发送
+        let messageQueue = []; // 用于处理多条消息队列
+        
+        // DOM 元素
+        const chatContainer = document.getElementById('chat-container');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const refreshBtn = document.getElementById('refresh-btn');
+        const typingIndicator = document.getElementById('typing-indicator');
+        const sessionIdDisplay = document.getElementById('session-id-display');
+        const initOverlay = document.getElementById('init-overlay');
+        const apiStatus = document.getElementById('api-status');
+        
+        // API 配置
+        const API_KEY = 'pat_Fy9K5cicL25Ikr1wikpXqbxEUlEuSgQIeeCwe2Cns6BWwl6baSc199i6h3RQU0m5';
+        const BOT_ID = '7524319361818001449';
+        const CREATE_CONVERSATION_URL = 'https://api.coze.cn/v1/conversation/create';
+        const CHAT_URL = 'https://api.coze.cn/v3/chat';
+        
+        // 初始化会话
+        async function initConversation() {
+            try {
+                console.log("正在初始化会话...");
+                const response = await fetch(CREATE_CONVERSATION_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        bot_id: BOT_ID
+                    })
+                });
+                
+                const data = await response.json();
+                console.log("会话初始化响应:", data);
+                
+                if (data.code === 0) {
+                    conversationId = data.data.id;
+                    sessionIdDisplay.textContent = conversationId.substring(0, 8) + '...';
+                    sessionStartTime = Date.now();
+                    startSessionTimer();
+                    initOverlay.style.display = 'none';
+                    console.log('会话初始化成功:', conversationId);
+                    apiStatus.textContent = 'API状态: 正常';
+                    apiStatus.style.color = '#2ecc71';
+                } else {
+                    throw new Error(`会话初始化失败: ${data.msg}`);
+                }
+            } catch (error) {
+                console.error('会话初始化错误:', error);
+                apiStatus.textContent = 'API状态: 错误 - 请检查网络';
+                apiStatus.style.color = '#e74c3c';
+                
+                // 显示错误消息
+                displayBotMessage('会话初始化失败，请尝试刷新页面或稍后再试。');
+                initOverlay.style.display = 'none';
+            }
+        }
+        
+        // 开始会话计时器
+        function startSessionTimer() {
+            if (sessionTimer) clearInterval(sessionTimer);
+            
+            sessionTimer = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000 / 60); // 分钟
+                const remaining = 30 - elapsed;
+                
+                if (remaining <= 5 && remaining > 0) {
+                    document.getElementById('session-expire-warning').style.display = 'flex';
+                    document.getElementById('session-expire-warning').querySelector('span').textContent = 
+                        `会话即将过期，${Math.floor(remaining)}分钟后自动刷新`;
+                } else if (remaining <= 0) {
+                    resetConversation();
+                }
+            }, 60000); // 每分钟检查一次
+        }
+        
+        // 重置会话
+        async function resetConversation() {
+            // 清空聊天记录（保留前两条初始消息）
+            const messages = chatContainer.querySelectorAll('.message');
+            for (let i = 2; i < messages.length; i++) {
+                messages[i].remove();
+            }
+            
+            // 隐藏所有选项容器
+            document.querySelectorAll('.option-message').forEach(el => el.remove());
+            
+            // 显示初始化覆盖层
+            initOverlay.style.display = 'flex';
+            
+            // 重置会话
+            await initConversation();
+        }
+        
+        // 发送消息到智能体
+        async function sendMessageToBot(message) {
+            if (isProcessing) {
+                console.log("已有请求在处理中，忽略新请求");
+                return;
+            }
+            
+            if (!conversationId) {
+                displayBotMessage('会话未初始化，请稍后再试...');
+                return;
+            }
+            
+            isProcessing = true;
+            sendBtn.disabled = true;
+            
+            // 显示正在输入指示器
+            typingIndicator.style.display = 'flex';
+            apiStatus.textContent = 'API状态: 请求中...';
+            apiStatus.style.color = '#f39c12';
+            
+            try {
+                console.log("发送消息到智能体:", message);
+                const response = await fetch(`${CHAT_URL}?conversation_id=${conversationId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${API_KEY}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        bot_id: BOT_ID,
+                        user_id: userId,
+                        stream: true,
+                        auto_save_history: true,
+                        additional_messages: [{
+                            role: "user",
+                            content: message,
+                            content_type: "text"
+                        }]
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error(`请求失败: ${response.status} ${response.statusText}`);
+                }
+                
+                // 处理流式响应
+                const reader = response.body.getReader();
+                const decoder = new TextDecoder('utf-8');
+                let result = '';
+                let isFirstMessage = true;
+                
+                // 存储消息的数组
+                let messages = [];
+                
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    
+                    const chunk = decoder.decode(value, { stream: true });
+                    const events = chunk.split('\n\n').filter(e => e.trim());
+                    
+                    for (const event of events) {
+                        const lines = event.split('\n');
+                        let eventType = '';
+                        let eventData = '';
+                        
+                        for (const line of lines) {
+                            if (line.startsWith('event:')) {
+                                eventType = line.replace('event:', '').trim();
+                            } else if (line.startsWith('data:')) {
+                                eventData = line.replace('data:', '').trim();
+                            }
+                        }
+                        
+                        // 处理不同的事件类型
+                        if (eventType === 'conversation.message.delta') {
+                            try {
+                                const data = JSON.parse(eventData);
+                                if (data.type === 'answer' && data.content_type === 'text') {
+                                    // 追加内容
+                                    result += data.content;
+                                    
+                                    // 如果是第一条消息，更新当前消息容器
+                                    if (isFirstMessage) {
+                                        if (!currentBotMessage) {
+                                            currentBotMessage = createBotMessageElement();
+                                            chatContainer.appendChild(currentBotMessage);
+                                        }
+                                        currentBotMessage.querySelector('.bot-message-content').innerHTML = formatMessage(result);
+                                    }
+                                }
+                            } catch (e) {
+                                console.error('解析delta事件出错:', e);
+                            }
+                        } else if (eventType === 'conversation.message.completed') {
+                            try {
+                                const data = JSON.parse(eventData);
+                                
+                                // 处理文本消息
+                                if (data.type === 'answer' && data.content_type === 'text') {
+                                    // 保存当前消息
+                                    messages.push(data.content);
+                                    
+                                    // 如果是第一条消息
+                                    if (isFirstMessage) {
+                                        isFirstMessage = false;
+                                        
+                                        // 更新第一条消息
+                                        currentBotMessage.querySelector('.bot-message-content').innerHTML = formatMessage(data.content);
+                                        
+                                        // 检查是否需要输入框
+                                        if (data.content.includes('-input')) {
+                                            appendInputField(currentBotMessage);
+                                        }
+                                    } else {
+                                        // 创建新的消息容器
+                                        const newMessage = createBotMessageElement();
+                                        newMessage.querySelector('.bot-message-content').innerHTML = formatMessage(data.content);
+                                        chatContainer.appendChild(newMessage);
+                                    }
+                                    
+                                    // 重置当前消息
+                                    result = '';
+                                } 
+                                // 处理后续操作消息
+                                else if (data.type === 'follow_up') {
+                                    displayOptions([data.content]);
+                                }
+                            } catch (e) {
+                                console.error('解析completed事件出错:', e);
+                            }
+                        }
+                    }
+                    
+                    // 滚动到底部
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+                
+                // 处理所有消息
+                if (messages.length > 0) {
+                    // 清除之前创建的消息容器
+                    if (currentBotMessage) {
+                        currentBotMessage.remove();
+                    }
+                    
+                    // 创建并显示所有消息
+                    messages.forEach((msg, index) => {
+                        const messageDiv = createBotMessageElement();
+                        messageDiv.querySelector('.bot-message-content').innerHTML = formatMessage(msg);
+                        
+                        // 如果是最后一条消息且包含疾病选项
+                        if (index === messages.length - 1 && msg.includes('以下哪种疾病')) {
+                            appendDiseaseOptions(messageDiv);
+                        }
+                        
+                        chatContainer.appendChild(messageDiv);
+                    });
+                    
+                    // 滚动到底部
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                }
+                
+            } catch (error) {
+                console.error('请求出错:', error);
+                displayBotMessage(`抱歉，请求出错: ${error.message}`);
+                apiStatus.textContent = 'API状态: 错误 - 请求失败';
+                apiStatus.style.color = '#e74c3c';
+            } finally {
+                // 隐藏"正在输入"指示器
+                typingIndicator.style.display = 'none';
+                currentBotMessage = null;
+                sendBtn.disabled = false;
+                isProcessing = false;
+                apiStatus.textContent = 'API状态: 正常';
+                apiStatus.style.color = '#2ecc71';
+            }
+        }
+        
+        // 显示用户消息
+        function displayUserMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message user-message';
+            messageDiv.textContent = message;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // 创建新的机器人消息元素
+        function createBotMessageElement() {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot-message';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'bot-avatar';
+            avatar.innerHTML = '<i class="fas fa-stethoscope"></i>';
+            
+            const content = document.createElement('div');
+            content.className = 'bot-message-content';
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            
+            return messageDiv;
+        }
+        
+        // 显示机器人消息
+        function displayBotMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'message bot-message';
+            
+            const avatar = document.createElement('div');
+            avatar.className = 'bot-avatar';
+            avatar.innerHTML = '<i class="fas fa-stethoscope"></i>';
+            
+            const content = document.createElement('div');
+            content.className = 'bot-message-content';
+            content.innerHTML = formatMessage(message);
+            
+            messageDiv.appendChild(avatar);
+            messageDiv.appendChild(content);
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+            
+            return content;
+        }
+        
+        // 格式化消息内容
+        function formatMessage(content) {
+            // 简单处理换行和重点内容
+            let formatted = content
+                .replace(/\n/g, '<br>')
+                .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+                .replace(/-input/g, '<div class="input-prompt">请在此输入您的回答：</div>');
+            
+            return formatted;
+        }
+        
+        // 在消息后添加输入框
+        function appendInputField(messageElement) {
+            const inputArea = document.createElement('div');
+            inputArea.className = 'input-area';
+            inputArea.style.marginTop = '10px';
+            inputArea.innerHTML = `
+                <input type="text" class="special-input" style="padding: 8px; border: 1px solid #3498db; border-radius: 8px; width: 70%;">
+                <button class="submit-special-input" style="padding: 8px 15px; background: #3498db; color: white; border: none; border-radius: 8px; margin-left: 10px; cursor: pointer;">提交</button>
+            `;
+
+            const submitBtn = inputArea.querySelector('.submit-special-input');
+            const input = inputArea.querySelector('.special-input');
+
+            submitBtn.addEventListener('click', () => {
+                const value = input.value.trim();
+                if (value) {
+                    // 发送用户输入
+                    displayUserMessage(value);
+                    sendMessageToBot(value);
+                    // 移除输入区域
+                    inputArea.remove();
+                }
+            });
+
+            messageElement.appendChild(inputArea);
+        }
+        
+        // 添加疾病选项
+        function appendDiseaseOptions(messageElement) {
+            const options = [
+                '子宫肌瘤',
+                '子宫内膜异位症',
+                '卵巢囊肿',
+                '盆腔炎'
+            ];
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'disease-options';
+            
+            options.forEach(option => {
+                const btn = document.createElement('div');
+                btn.className = 'disease-btn';
+                btn.textContent = option;
+                btn.onclick = function() {
+                    // 移除之前的选择
+                    document.querySelectorAll('.disease-btn').forEach(el => {
+                        el.classList.remove('selected');
+                    });
+                    
+                    // 标记当前选择
+                    this.classList.add('selected');
+                    
+                    // 添加确认按钮
+                    if (!document.getElementById('confirm-disease')) {
+                        const confirmBtn = document.createElement('button');
+                        confirmBtn.id = 'confirm-disease';
+                        confirmBtn.textContent = '确认选择';
+                        confirmBtn.style.marginTop = '15px';
+                        confirmBtn.style.padding = '10px 20px';
+                        confirmBtn.style.background = '#3498db';
+                        confirmBtn.style.color = 'white';
+                        confirmBtn.style.border = 'none';
+                        confirmBtn.style.borderRadius = '8px';
+                        confirmBtn.style.cursor = 'pointer';
+                        confirmBtn.style.transition = 'all 0.3s';
+                        
+                        confirmBtn.onclick = function() {
+                            const selected = document.querySelector('.disease-btn.selected');
+                            if (selected) {
+                                displayUserMessage(selected.textContent);
+                                sendMessageToBot(selected.textContent);
+                                this.remove();
+                            } else {
+                                alert('请先选择一个选项');
+                            }
+                        };
+                        
+                        optionsDiv.appendChild(confirmBtn);
+                    }
+                };
+                
+                optionsDiv.appendChild(btn);
+            });
+            
+            messageElement.appendChild(optionsDiv);
+        }
+        
+        // 显示选项按钮
+        function displayOptions(options) {
+            const optionMessage = document.createElement('div');
+            optionMessage.className = 'option-message';
+            
+            const optionContainer = document.createElement('div');
+            optionContainer.className = 'option-container';
+            
+            options.forEach(option => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = option;
+                btn.onclick = () => {
+                    displayUserMessage(option);
+                    sendMessageToBot(option);
+                };
+                optionContainer.appendChild(btn);
+            });
+            
+            optionMessage.appendChild(optionContainer);
+            chatContainer.appendChild(optionMessage);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+        
+        // 事件监听
+        sendBtn.addEventListener('click', () => {
+            const message = userInput.value.trim();
+            if (message) {
+                displayUserMessage(message);
+                sendMessageToBot(message);
+                userInput.value = '';
+            }
+        });
+        
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendBtn.click();
+            }
+        });
+        
+        refreshBtn.addEventListener('click', resetConversation);
+        
+        // 复制会话ID
+        sessionIdDisplay.addEventListener('click', () => {
+            if (conversationId) {
+                navigator.clipboard.writeText(conversationId).then(() => {
+                    const originalText = sessionIdDisplay.textContent;
+                    sessionIdDisplay.textContent = '已复制!';
+                    setTimeout(() => {
+                        sessionIdDisplay.textContent = originalText;
+                    }, 2000);
+                });
+            }
+        });
+        
+        // 初始化
+        window.addEventListener('DOMContentLoaded', initConversation);
+    </script>
+</body>
+</html>
