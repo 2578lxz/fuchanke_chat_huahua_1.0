@@ -286,29 +286,6 @@
             margin: 5px 0;
         }
         
-        .option-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .option-btn {
-            background: linear-gradient(135deg, #9b59b6 0%, #3498db 100%);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            padding: 8px 15px;
-            cursor: pointer;
-            transition: all 0.2s;
-            font-size: 0.95rem;
-        }
-        
-        .option-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        
         .command {
             background-color: rgba(52, 152, 219, 0.1);
             color: #1a5d9e;
@@ -437,34 +414,6 @@
             border-radius: 0 8px 8px 0;
         }
         
-        .disease-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 15px;
-        }
-        
-        .disease-btn {
-            background: white;
-            border: 1px solid #e0e7ff;
-            border-radius: 8px;
-            padding: 12px 15px;
-            text-align: left;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        
-        .disease-btn:hover {
-            background: #f0f7ff;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
-        }
-        
-        .disease-btn.selected {
-            background: #e6f0ff;
-            border-color: #3498db;
-        }
-        
         @keyframes spin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
@@ -509,10 +458,6 @@
                 gap: 8px;
             }
             
-            .option-container {
-                flex-direction: column;
-            }
-            
             .session-info {
                 position: relative;
                 top: 0;
@@ -529,14 +474,6 @@
                 margin-top: 5px;
                 margin-bottom: 10px;
                 text-align: center;
-            }
-            
-            .disease-options {
-                gap: 8px;
-            }
-            
-            .disease-btn {
-                padding: 10px 12px;
             }
         }
     </style>
@@ -853,10 +790,6 @@
                                     // 重置当前消息
                                     result = '';
                                 } 
-                                // 处理后续操作消息
-                                else if (data.type === 'follow_up') {
-                                    displayOptions([data.content]);
-                                }
                             } catch (e) {
                                 console.error('解析completed事件出错:', e);
                             }
@@ -878,11 +811,6 @@
                     messages.forEach((msg, index) => {
                         const messageDiv = createBotMessageElement();
                         messageDiv.querySelector('.bot-message-content').innerHTML = formatMessage(msg);
-                        
-                        // 如果是最后一条消息且包含疾病选项
-                        if (index === messages.length - 1 && msg.includes('以下哪种疾病')) {
-                            appendDiseaseOptions(messageDiv);
-                        }
                         
                         chatContainer.appendChild(messageDiv);
                     });
@@ -991,90 +919,6 @@
             });
 
             messageElement.appendChild(inputArea);
-        }
-        
-        // 添加疾病选项
-        function appendDiseaseOptions(messageElement) {
-            const options = [
-                '子宫肌瘤',
-                '子宫内膜异位症',
-                '卵巢囊肿',
-                '盆腔炎'
-            ];
-            
-            const optionsDiv = document.createElement('div');
-            optionsDiv.className = 'disease-options';
-            
-            options.forEach(option => {
-                const btn = document.createElement('div');
-                btn.className = 'disease-btn';
-                btn.textContent = option;
-                btn.onclick = function() {
-                    // 移除之前的选择
-                    document.querySelectorAll('.disease-btn').forEach(el => {
-                        el.classList.remove('selected');
-                    });
-                    
-                    // 标记当前选择
-                    this.classList.add('selected');
-                    
-                    // 添加确认按钮
-                    if (!document.getElementById('confirm-disease')) {
-                        const confirmBtn = document.createElement('button');
-                        confirmBtn.id = 'confirm-disease';
-                        confirmBtn.textContent = '确认选择';
-                        confirmBtn.style.marginTop = '15px';
-                        confirmBtn.style.padding = '10px 20px';
-                        confirmBtn.style.background = '#3498db';
-                        confirmBtn.style.color = 'white';
-                        confirmBtn.style.border = 'none';
-                        confirmBtn.style.borderRadius = '8px';
-                        confirmBtn.style.cursor = 'pointer';
-                        confirmBtn.style.transition = 'all 0.3s';
-                        
-                        confirmBtn.onclick = function() {
-                            const selected = document.querySelector('.disease-btn.selected');
-                            if (selected) {
-                                displayUserMessage(selected.textContent);
-                                sendMessageToBot(selected.textContent);
-                                this.remove();
-                            } else {
-                                alert('请先选择一个选项');
-                            }
-                        };
-                        
-                        optionsDiv.appendChild(confirmBtn);
-                    }
-                };
-                
-                optionsDiv.appendChild(btn);
-            });
-            
-            messageElement.appendChild(optionsDiv);
-        }
-        
-        // 显示选项按钮
-        function displayOptions(options) {
-            const optionMessage = document.createElement('div');
-            optionMessage.className = 'option-message';
-            
-            const optionContainer = document.createElement('div');
-            optionContainer.className = 'option-container';
-            
-            options.forEach(option => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.textContent = option;
-                btn.onclick = () => {
-                    displayUserMessage(option);
-                    sendMessageToBot(option);
-                };
-                optionContainer.appendChild(btn);
-            });
-            
-            optionMessage.appendChild(optionContainer);
-            chatContainer.appendChild(optionMessage);
-            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
         
         // 事件监听
